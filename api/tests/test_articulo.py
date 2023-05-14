@@ -7,7 +7,7 @@ productos = [
 
     {'referencia': '563' , 'nombre' : 'Waffer' , 'descripcion' : 'Galletas sabor vainilla'},
     {'referencia': '123' , 'nombre' : 'Trululu' , 'descripcion' : 'Gomas rellenas'},
-    {'referencia': '563' , 'nombre' : 'Oreo'  , 'descripcion': 'Galletas sabor chocolate'}
+    {'referencia': '836' , 'nombre' : 'Oreo'  , 'descripcion': 'Galletas sabor chocolate'}
 
 ]
 class TestArticuloView:

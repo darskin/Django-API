@@ -162,7 +162,9 @@ class pedidoView(View):
     
     def put(self, request, id):
         jd = json.loads(request.body)
-        if(len(jd) == 3):
+        precio_total_sin_impuestos = 0
+        precio_total_con_impuestos = 0
+        if(len(jd) == 1):
             pedidos = list(pedido.objects.filter(id=id).values())
             if len(pedidos) > 0:
                 resultado = pedido.objects.get(id = id)
@@ -171,6 +173,9 @@ class pedidoView(View):
                     articulos = list(articulo.objects.filter(referencia=x['referencia']).values())
                     if (articulos == []):
                         articulos_faltantes.append(x['referencia'] + " ")
+                    else:
+                        precio_total_sin_impuestos += int(articulos[0]['precio_sin_impuestos']) * int(x['cantidad'])
+                        precio_total_con_impuestos += (int(articulos[0]['precio_sin_impuestos']) + (int(articulos[0]['precio_sin_impuestos']) * (int(articulos[0]['impuesto_aplicable']) / 100)) )* int(x['cantidad'])
                 print(articulos_faltantes)
                 if (articulos_faltantes != []):
                     datos = {
@@ -178,8 +183,8 @@ class pedidoView(View):
                     }
                 else:
                     resultado.lista_articulos = jd['lista_articulos']
-                    resultado.precio_total_sin_impuestos = jd['precio_total_sin_impuestos']
-                    resultado.precio_total_con_impuestos = jd['precio_total_con_impuestos']
+                    resultado.precio_total_sin_impuestos = precio_total_sin_impuestos
+                    resultado.precio_total_con_impuestos = precio_total_con_impuestos
                     resultado.save()
                     datos={
                             'message':"Pedido actualizado"

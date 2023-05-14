@@ -1,9 +1,10 @@
 import requests
-
+from api.models import articulo as articulo
 
 
 ENDPOINT = "http://127.0.0.1:8000/api/pedidos/"
 id_ultimo_pedido = 0
+articulos = ["563","123","836"]
 
 class TestPedidoView:
     
@@ -11,15 +12,16 @@ class TestPedidoView:
 
     #test para crear un pedido con todos los datos requeridos
     def test_post_pedido_datos_completos(self):
+        for x in articulos:
+            if not(articulo.objects.filter(referencia=x).values() == []):
+                articulo_agregado = x
         data = {            
             "lista_articulos": [
                 {
                 "cantidad": "3",
-                "referencia": "563"
+                "referencia": articulo_agregado
                 }
-            ],
-            "precio_total_sin_impuestos": "600.00",
-            "precio_total_con_impuestos": "7000.00"
+            ]
         }
         response = requests.post(ENDPOINT, json = data)
         assert response.status_code == 200
@@ -37,9 +39,7 @@ class TestPedidoView:
                 "cantidad": "6",
                 "referencia": "777"
                 }
-            ],
-            "precio_total_sin_impuestos": "600.00",
-            "precio_total_con_impuestos": "7000.00"
+            ]
         }
         response = requests.post(ENDPOINT, json = data)
         assert response.status_code == 200
@@ -47,19 +47,7 @@ class TestPedidoView:
          
     #test para crear un pedido con datos incompletos
     def test_post_pedido_datos_incompletos(self):
-        data = {            
-            "lista_articulos": [
-                {
-                "cantidad": "3",
-                "referencia": "12364"
-                },
-                {
-                "cantidad": "6",
-                "referencia": "777"
-                }
-            ],
-            "precio_total_sin_impuestos": "600.00"
-        }
+        data = {}
         response = requests.post(ENDPOINT, json = data)
         assert response.status_code == 200
         assert response.json() == {'message' : 'Complete todos los datos necesarios'}
@@ -85,15 +73,16 @@ class TestPedidoView:
 
     #test para actualizar un pedido con un id correcto
     def test_put_pedido_id_correcto(self):
+        for x in articulos:
+            if not(articulo.objects.filter(referencia=x).values() == []):
+                articulo_agregado = x
         data = {            
             "lista_articulos": [
                 {
                 "cantidad": "3",
-                "referencia": "563"
+                "referencia": articulo_agregado
                 }
-            ],
-            "precio_total_sin_impuestos": "6700.00",
-            "precio_total_con_impuestos": "7000.00" 
+            ]
         }
         response = requests.put(ENDPOINT + str(id_ultimo_pedido), json = data)
         assert response.status_code == 200
@@ -107,9 +96,7 @@ class TestPedidoView:
                 "cantidad": "3",
                 "referencia": "123"
                 }
-            ],
-            "precio_total_sin_impuestos": "6700.00",
-            "precio_total_con_impuestos": "7000.00" 
+            ] 
         }
         response = requests.put(ENDPOINT + str(id_ultimo_pedido+1), json = data)
         assert response.status_code == 200
@@ -117,15 +104,7 @@ class TestPedidoView:
 
     #test para actualizar un pedido con datos faltantes
     def test_put_pedido_datos_incompletos(self):
-        data = {            
-            "lista_articulos": [
-                {
-                "cantidad": "3",
-                "referencia": "123"
-                }
-            ],
-            "precio_total_sin_impuestos": "6700.00"
-        }
+        data = {}
         response = requests.put(ENDPOINT + str(id_ultimo_pedido), json = data)
         assert response.status_code == 200
         assert response.json() == {'message':"Complete todos los datos necesarios"}
