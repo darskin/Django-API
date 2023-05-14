@@ -129,12 +129,18 @@ class pedidoView(View):
     
     def post(self, request):
         jd = json.loads(request.body)
-        if(len(jd)==3):
+        precio_total_sin_impuestos = 0
+        precio_total_con_impuestos = 0
+        if(len(jd)==1):
             articulos_faltantes = []
             for x in jd['lista_articulos']:
                 articulos = list(articulo.objects.filter(referencia=x['referencia']).values())
+                print(articulos)
                 if (articulos == []):
                     articulos_faltantes.append(x['referencia'] + " ")
+                else:
+                    precio_total_sin_impuestos += int(articulos[0]['precio_sin_impuestos']) * int(x['cantidad'])
+                    precio_total_con_impuestos += (int(articulos[0]['precio_sin_impuestos']) + (int(articulos[0]['precio_sin_impuestos']) * (int(articulos[0]['impuesto_aplicable']) / 100)) )* int(x['cantidad'])
             if (articulos_faltantes != []):
                 datos = {
                     'message':  "No existen los articulos: "+ "".join(articulos_faltantes)
@@ -142,8 +148,8 @@ class pedidoView(View):
             else:
                 pedido.objects.create(
                     lista_articulos = jd['lista_articulos'],
-                    precio_total_sin_impuestos = jd['precio_total_sin_impuestos'],
-                    precio_total_con_impuestos = jd['precio_total_con_impuestos'],
+                    precio_total_sin_impuestos = precio_total_sin_impuestos,
+                    precio_total_con_impuestos = precio_total_con_impuestos,
                     )
                 datos = {
                     'message':  "Pedido creado"

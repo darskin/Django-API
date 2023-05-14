@@ -1,18 +1,27 @@
 import requests
+import random
 
 ENDPOINT = "http://127.0.0.1:8000/api/articulos/"
 id_ultimo_articulo = 0
+productos = [
 
+    {'referencia': '563' , 'nombre' : 'Waffer' , 'descripcion' : 'Galletas sabor vainilla'},
+    {'referencia': '123' , 'nombre' : 'Trululu' , 'descripcion' : 'Gomas rellenas'},
+    {'referencia': '563' , 'nombre' : 'Oreo'  , 'descripcion': 'Galletas sabor chocolate'}
+
+]
 class TestArticuloView:
 
     #test para crear un articulo con todos los datos requeridos
     def test_post_articulo_datos_completos(self):
+        numero_producto = random.randint(0,2)
+        print(numero_producto)
         data = {
-            "referencia": "563",
-            "nombre": "Waffer",
-            "descripcion": "galletas waffer",
-            "precio_sin_impuestos": "500.00",
-            "impuesto_aplicable": 15
+            "referencia": productos[numero_producto]['referencia'],
+            "nombre": productos[numero_producto]['nombre'],
+            "descripcion": productos[numero_producto]['descripcion'],
+            "precio_sin_impuestos": str(random.randint(100,2000))+".00",
+            "impuesto_aplicable": str(random.randint(1,50))
         }
         response = requests.post(ENDPOINT, json = data)
         assert response.status_code == 200
